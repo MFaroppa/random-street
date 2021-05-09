@@ -1,0 +1,30 @@
+[
+	{
+		"id": 1,
+		"name": "Bytecoin",
+		"drift": 0.15,
+		"volatility": 0.1,
+		"owned": 0,
+		"currentPrice": "undefined",
+		"historicalPrices": [
+			{
+				"time": 0,
+				"price": 500000
+			}
+		]
+	},
+	{
+		"id": 2,
+		"name": "Soybean",
+		"drift": 0.1,
+		"volatility": 0.5,
+		"owned": 0,
+		"currentPrice": "undefined",
+		"historicalPrices": [
+			{
+				"time": 0,
+				"price": 600
+			}
+		]
+	}
+]

@@ -1,39 +1,45 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+import { Button } from '@material-ui/core';
 import { useEffect, useState } from 'react';
-import { LineChart, Line, YAxis } from 'recharts';
+import Product from './Product';
 
-const PRICE_CALCULATION_TIME = 500;
+const PRICE_CALCULATION_TIME = 200;
 const PRICES_LENGTH = 365;
 const TIME_PERIOD = 1/365;
 const STANDARD_DEVIATION = Math.sqrt(TIME_PERIOD)
 
 export default function Market(props) {
 
+	let [money, setMoney] = useState(5000)
+	let [time, setTime] = useState(0)
 	let [products, setProducts] = useState([
 		{
+			id: 1,
 			name: "Bytecoin",
 			drift: 0.15,
 			volatility: 0.1,
 			owned: 0,
-			currentPrice: 50000,
-			historialPrices: [{
+			currentPrice: undefined,
+			historicalPrices: [{
 				time: 0,
 				price: 500000
 			}]
 		},
 		{
+			id: 2,
 			name: "Soybean",
 			drift: 0.1,
-			volatility: 0.05,
+			volatility: 0.5,
 			owned: 0,
-			currentPrice: 600,
-			historialPrices: [{
+			currentPrice: undefined,
+			historicalPrices: [{
 				time: 0,
 				price: 600
 			}]
 		}
 	])
 
-	let [time, setTime] = useState(0)
+	let [visibleProduct, setVisibleProduct] = useState(products[0])
 
 	function generateGaussian(mean, std) {
 		var u1 = Math.random();
@@ -43,10 +49,10 @@ export default function Market(props) {
 	}
 
 	let generatePrice = (product, n = 5) => {
-		let lastPrice = product.historialPrices[product.historialPrices.length - 1].price
+		let lastPrice = product.historicalPrices[product.historicalPrices.length - 1].price
 		let tempPrices = []
 
-		if (product.historialPrices.length < PRICES_LENGTH)
+		if (product.historicalPrices.length < PRICES_LENGTH)
 			n = PRICES_LENGTH
 
 		for (let x = 0; x < n; x++) {
@@ -59,10 +65,28 @@ export default function Market(props) {
 			})
 		}
 
-		product.historialPrices = [...product.historialPrices.slice(Math.max(product.historialPrices.length - PRICES_LENGTH-1 + n, 0)), ...tempPrices]
+		product.historicalPrices = [...product.historicalPrices.slice(Math.max(product.historicalPrices.length - PRICES_LENGTH-1 + n, 0)), ...tempPrices]
 		product.currentPrice = lastPrice
 
 		return product;
+	}
+
+	let buyProduct = (product, amount) => {
+		const index = products.indexOf(product)
+		if (amount * product.currentPrice <= money && index !== undefined) {
+			product.owned += amount
+			setMoney(money - amount * product.currentPrice)
+			products[index] = product
+		}
+	}
+
+	let sellProduct = (product, amount) => {
+		const index = products.indexOf(product)
+		if (amount <= product.owned && index !== undefined) {
+			product.owned -= amount
+			setMoney(money + amount * product.currentPrice)
+			products[index] = product
+		}
 	}
 
 	//timer for new price calculation
@@ -83,16 +107,28 @@ export default function Market(props) {
 		}
 	}, [products])
 
+	//backup
+	useEffect(() => {
+		let interval = setInterval(() => {
+			localStorage.setItem("products", JSON.stringify(products))
+			localStorage.setItem("money", money)
+		}, 5000)
+
+		return () => {
+			clearInterval(interval)
+		}
+	}, [])
+
 	return (
-		<div className="market">
-			<LineChart width={1000} height={300} data={products[0].historialPrices}>
-				<YAxis/>
-				<Line type="monotone" dataKey="price" isAnimationActive={false} dot={false} stroke="#8884d8" />
-			</LineChart>
-			<LineChart width={1000} height={300} data={products[1].historialPrices}>
-				<YAxis/>
-				<Line type="monotone" dataKey="price" isAnimationActive={false} dot={false} stroke="#8884d8" />
-			</LineChart>
+		<div className="market-container">
+			<h3>You have ${money}</h3>
+			{
+				products.map(product => {
+					return <Button size="small" color={product.id === visibleProduct.id ? "primary" : "default"} variant="contained" key={product.id} onClick={() => setVisibleProduct(product)}>{product.name}</Button>
+				})
+			}
+
+			<Product className="product" key={visibleProduct.id} product={visibleProduct} buyProduct={buyProduct} sellProduct={sellProduct}/>
 		</div>
 	);
 }
