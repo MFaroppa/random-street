@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Portfolio from './Portfolio';
 import Product from './Product';
 
-const PRICE_CALCULATION_TIME = 200;
+const PRICE_CALCULATION_TIME = 300;
 const PRICES_LENGTH = 365;
 const TIME_PERIOD = 1/365;
 const STANDARD_DEVIATION = Math.sqrt(TIME_PERIOD)
@@ -16,8 +16,13 @@ export default function Market(props) {
 	let [products, setProducts] = useState(props.products)
 	let [visibleProduct, setVisibleProduct] = useState(products[0])
 	let [stock] = useState([])
+	let [marketTrend, setMarketTrend] = useState(0)
 
-	function generateGaussian(mean, std) {
+	function generateRandom(min, max) {
+		return Math.floor(Math.random() * (max - min + 1) + min);
+	  }
+
+	function generateGaussianRandom(mean, std) {
 		var u1 = Math.random();
 		var u2 = Math.random();
 		var z = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(Math.PI * 2 * u2);
@@ -32,7 +37,7 @@ export default function Market(props) {
 			n = PRICES_LENGTH
 
 		for (let x = 0; x < n; x++) {
-			const variation = lastPrice * TIME_PERIOD * product.drift + lastPrice * product.volatility * generateGaussian(0, STANDARD_DEVIATION);
+			const variation = lastPrice * TIME_PERIOD * product.drift + lastPrice * product.volatility * generateGaussianRandom(marketTrend, STANDARD_DEVIATION);
 			lastPrice += variation;
 
 			tempPrices.push({
@@ -118,6 +123,17 @@ export default function Market(props) {
 		return () => {
 			clearInterval(interval)
 		}
+	}, [])
+
+	let trendLoop = () => {
+		setTimeout(() => {
+			setMarketTrend(generateGaussianRandom(0, 0.01))
+			trendLoop()
+		}, generateRandom(5000, 60000))
+	}
+
+	useEffect(() => {
+		trendLoop()
 	}, [])
 
 	return (
