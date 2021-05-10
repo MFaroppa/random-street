@@ -3,17 +3,12 @@ import Market from './Market';
 
 function App() {
 
-	let data = require("./products.json")
-
-	console.log(data)
-
-	let products = localStorage.getItem("products")
-
-	console.log(JSON.parse(products))
+	const products = require("./products.json")
+	const money = 500000
 
 	return (
 		<div className="App">
-			<Market/>
+			<Market money={money} products={products}/>
 		</div>
 	);
 }
