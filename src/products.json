@@ -17,13 +17,27 @@
 		"id": 2,
 		"name": "Soybean",
 		"drift": 0.1,
-		"volatility": 0.1,
+		"volatility": 0.15,
 		"owned": 0,
 		"currentPrice": "undefined",
 		"historicalPrices": [
 			{
 				"time": 0,
 				"price": 600
+			}
+		]
+	},
+	{
+		"id": 3,
+		"name": "Gold",
+		"drift": 0.05,
+		"volatility": 0.05,
+		"owned": 0,
+		"currentPrice": "undefined",
+		"historicalPrices": [
+			{
+				"time": 0,
+				"price": 25000
 			}
 		]
 	}

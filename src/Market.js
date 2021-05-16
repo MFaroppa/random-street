@@ -1,11 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import Portfolio from './Portfolio';
-import Product from './Product';
+import PricesChart from './PricesChart';
 import ProductSelector from './ProductSelector';
 import './Market.css';
 
-const PRICE_CALCULATION_TIME = 1000;
+const PRICE_CALCULATION_TIME = 500;
 const PRICES_LENGTH = 365;
 const TIME_PERIOD = 1/365;
 const STANDARD_DEVIATION = Math.sqrt(TIME_PERIOD)
@@ -84,7 +84,7 @@ export default function Market(props) {
 
 		if (index !== undefined) {
 			product = products[index]
-			
+
 			let amount = percentage * product.owned
 			let productStock = stock.indexOf(stock.find(auxStock => auxStock.product === product.name))
 
@@ -140,7 +140,6 @@ export default function Market(props) {
 			{products.length > 0 && (
 				<div className="market">
 					<div className="selector">
-						<span>Seleccione un producto</span>
 						<ProductSelector products={products} selectProduct={setVisibleProduct}/>
 					</div>
 					<div className="portfolio">
@@ -148,7 +147,7 @@ export default function Market(props) {
 						<Portfolio stocks={stock} />
 					</div>
 					<div className="prices-chart">
-						<Product className="product" key={visibleProduct.id} product={visibleProduct} money={money} buyProduct={buyProduct} sellProduct={sellProduct}/>
+						<PricesChart className="product" key={visibleProduct.id} product={visibleProduct} money={money} buyProduct={buyProduct} sellProduct={sellProduct}/>
 					</div>
 				</div>
 			)}
