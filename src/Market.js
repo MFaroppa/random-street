@@ -53,9 +53,10 @@ export default function Market(props) {
 		return product;
 	}
 
-	let buyProduct = (product, amount) => {
-		const index = products.indexOf(product)
-		if (amount > 0 && amount * product.currentPrice <= money && index !== undefined) {
+	let buyProduct = (product, percentage) => {
+		const index = products.indexOf(product);
+		let amount = percentage * money / product.currentPrice;
+		if (percentage > 0 && amount * product.currentPrice <= money && index !== undefined) {
 			product.owned += amount
 			products[index] = product
 
@@ -78,21 +79,28 @@ export default function Market(props) {
 		}
 	}
 
-	let sellProduct = (product, amount) => {
+	let sellProduct = (product, percentage) => {
 		const index = products.indexOf(product)
-		let productStock = stock.indexOf(stock.find(auxStock => auxStock.product === product.name))
-		if (amount <= product.owned && index !== undefined && productStock !== -1) {
-			let newAmount = stock[productStock].amount - amount
 
-			product.owned -= amount
-			products[index] = product
-
-			setMoney(money + amount * product.currentPrice)
+		if (index !== undefined) {
+			product = products[index]
 			
-			if (newAmount === 0)
-				stock.splice(productStock, 1)
-			else
-				stock[productStock].amount = newAmount
+			let amount = percentage * product.owned
+			let productStock = stock.indexOf(stock.find(auxStock => auxStock.product === product.name))
+
+			if (amount <= product.owned && productStock !== -1) {
+				let newAmount = stock[productStock].amount - amount
+
+				product.owned -= amount
+				products[index] = product
+
+				setMoney(money + amount * product.currentPrice)
+				
+				if (newAmount === 0)
+					stock.splice(productStock, 1)
+				else
+					stock[productStock].amount = newAmount
+			}
 		}
 	}
 
@@ -128,17 +136,19 @@ export default function Market(props) {
 
 	return (
 		<div className="market-container">
+			<h3>You have ${money.toFixed(2)}</h3>
 			{products.length > 0 && (
-				<div>
-					<h3>You have ${money.toFixed(2)}</h3>
+				<div className="market">
 					<div className="selector">
+						<span>Seleccione un producto</span>
 						<ProductSelector products={products} selectProduct={setVisibleProduct}/>
+					</div>
+					<div className="portfolio">
+						<span>Portfolio</span>
+						<Portfolio stocks={stock} />
 					</div>
 					<div className="prices-chart">
 						<Product className="product" key={visibleProduct.id} product={visibleProduct} money={money} buyProduct={buyProduct} sellProduct={sellProduct}/>
-					</div>
-					<div className="portfolio">
-						<Portfolio stocks={stock} />
 					</div>
 				</div>
 			)}

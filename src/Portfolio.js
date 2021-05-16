@@ -1,4 +1,4 @@
-import { List, ListItem, ListItemText } from "@material-ui/core";
+import { List, ListItem, ListItemText} from "@material-ui/core";
 
 export default function Portfolio(props) {
 
@@ -8,11 +8,16 @@ export default function Portfolio(props) {
         <div className="portfolio-container">
             <List>
                 {
+                    stocks === undefined || stocks.length === 0 ?
+                    <ListItem>
+                        <ListItemText primary={"You have no products in your portfolio"}/>
+                    </ListItem>
+                    :
                     stocks.map(stock => {
                         return (
                             <ListItem key={stock.product}>
                                 <ListItemText primary={stock.product}/>
-                                <ListItemText primary={stock.amount}/>
+                                <ListItemText primary={stock.amount.toFixed(5)}/>
                                 <ListItemText primary={"$" + stock.meanPrice}/>
                             </ListItem>
                         )
