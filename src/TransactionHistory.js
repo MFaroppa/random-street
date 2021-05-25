@@ -11,14 +11,14 @@ export default function TransactionHistory(props) {
     let [history] = useState([])
 
     useEffect(() => {
-        debugger
         if (props.newTransaction) {
             let transaction = props.newTransaction;
 
             history.unshift({
+                id: transaction.id,
                 type: transaction.type,
                 product: transaction.product,
-                quantity: transaction.amount.toFixed(4),
+                quantity: transaction.amount,
                 price: transaction.price,
                 total: (transaction.price * transaction.amount).toFixed(2)
             })
@@ -39,7 +39,7 @@ export default function TransactionHistory(props) {
                     </TableHead>
                     <TableBody>
                     {history.map(transaction => (
-                        <TableRow key={transaction.product}>
+                        <TableRow key={transaction.id}>
                             <TableCell align="center" style={transaction.type === 'buy' ? {color: 'green'} : {color: 'red'}}>{transaction.product}</TableCell>
                             <TableCell align="center" style={transaction.type === 'buy' ? {color: 'green'} : {color: 'red'}}>{transaction.quantity}</TableCell>
                             <TableCell align="center" style={transaction.type === 'buy' ? {color: 'green'} : {color: 'red'}}>{transaction.price}</TableCell>

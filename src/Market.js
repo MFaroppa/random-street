@@ -1,10 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
-import Portfolio from './Portfolio';
 import PricesChart from './PricesChart';
 import ProductSelector from './ProductSelector';
 import './Market.css';
 import TransactionHistory from './TransactionHistory';
+import { Button, Slider } from '@material-ui/core';
 
 const PRICE_CALCULATION_TIME = 500;
 const PRICES_LENGTH = 365;
@@ -20,6 +20,7 @@ export default function Market(props) {
 	let [stock] = useState([])
 	let [marketTrend, setMarketTrend] = useState(0)
 	let [newTransaction, setNewTransaction] = useState(undefined)
+	let [priceCalculationTime, setPriceCalculationTime] = useState(PRICE_CALCULATION_TIME)
 
 	function generateRandom(min, max) {
 		return Math.floor(Math.random() * (max - min + 1) + min);
@@ -56,16 +57,17 @@ export default function Market(props) {
 	}
 
 	let buyProduct = (product, amount) => {
-
 		const index = products.indexOf(product);
-		if (amount > 0 && amount * product.currentPrice <= money && index !== undefined) {
-			product.owned += amount
+		if (amount > 0 && amount <= money && index !== undefined) {
+			let productUnits = amount / product.currentPrice;
+
+			product.owned += productUnits
 			products[index] = product
 
-			setMoney(money - amount * product.currentPrice)
+			setMoney(money - amount)
 
 			let productStock = stock.indexOf(stock.find(auxStock => auxStock.product === product.name))
-			let newAmount = productStock !== -1 ? stock[productStock].amount + amount : amount
+			let newAmount = productStock !== -1 ? stock[productStock].amount + productUnits : productUnits
 
 			let newStock = {
 				product: product.name,
@@ -73,9 +75,10 @@ export default function Market(props) {
 			}
 
 			setNewTransaction({
+				id: newTransaction === undefined ? 1 : newTransaction.id + 1,
 				type: 'buy',
 				product: product.name,
-				amount: amount,
+				amount: productUnits,
 				price: product.currentPrice
 			})
 
@@ -88,7 +91,6 @@ export default function Market(props) {
 
 	let sellProduct = (product, amount) => {
 		const index = products.indexOf(product)
-
 		if (index !== undefined) {
 			product = products[index]
 			let productStock = stock.indexOf(stock.find(auxStock => auxStock.product === product.name))
@@ -102,6 +104,7 @@ export default function Market(props) {
 				setMoney(money + amount * product.currentPrice)
 
 				setNewTransaction({
+					id: newTransaction === undefined ? 1 : newTransaction.id + 1,
 					type: 'sell',
 					product: product.name,
 					amount: amount,
@@ -127,7 +130,7 @@ export default function Market(props) {
 			
 			setProducts(editedProducts)
 
-		}, PRICE_CALCULATION_TIME)
+		}, priceCalculationTime)
 
 		return () => {
 			clearInterval(interval);
@@ -149,16 +152,38 @@ export default function Market(props) {
 	return (
 		<div className="market-container">
 			<div className="menu">
-				<span className="actual-money">You have ${money.toFixed(2)}</span>
+				<div className="options">
+					<Button style={{color: "gray"}}>
+						Productos
+					</Button>
+					<Button style={{color: "gray"}}>
+						Créditos
+					</Button>
+					<span style={{color: "gray", display: "flex", alignItems: "center", gap: "12px", fontWeight: "500"}}>
+						<Slider
+							style={{color: "gray", width: "100px"}}
+							defaultValue={500}
+							value={priceCalculationTime}
+							onChange={(ev, value) => {
+								setPriceCalculationTime(value)
+							}}
+							aria-labelledby="discrete-slider"
+							valueLabelDisplay="off"
+							step={100}
+							min={100}
+							max={1000}
+						/>
+						{priceCalculationTime} ms
+					</span>
+				</div>
+				<span className="actual-money">
+					${money.toFixed(2)}
+				</span>
 			</div>
 			{products.length > 0 && (
 				<div className="market">
 					<div className="selector">
 						<ProductSelector products={products} selectProduct={setVisibleProduct} money={money} buyProduct={buyProduct} sellProduct={sellProduct}/>
-					</div>
-					<div className="portfolio">
-						<span>Portfolio</span>
-						<Portfolio stocks={stock} />
 					</div>
 					<div className="prices-chart">
 						<PricesChart className="product" key={visibleProduct.id} product={visibleProduct}/>

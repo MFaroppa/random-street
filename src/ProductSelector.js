@@ -50,7 +50,7 @@ export default function ProductSelector(props) {
         <div className="product-selector-container">
             {products.map(product => {
                 return (
-                    <div key={product.id} style={{marginBottom: 12}}>
+                    <div key={product.id} style={{marginBottom: 12, width: '300px'}}>
                         <Card classes={selectedProduct === product ? {root: classes.selectedCard} : null} variant="outlined">
                             <CardActionArea onClick={ev => onSelected(ev, product)}>
                                 <CardHeader title={product.name} subheader={<Tooltip title="Last year variation">{getProductVariation(product)}</Tooltip>}/>
@@ -75,7 +75,7 @@ export default function ProductSelector(props) {
                 aria-describedby="simple-modal-description"
                 style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}
             >
-                    <Paper elevation={3} style={{width: '500px', height: '500px', padding: '24px'}}>
+                    <Paper elevation={3} style={{width: '600px', height: '200px', padding: '24px'}}>
                         <Transaction product={selectedProduct} money={props.money} transactionType="Buy" transactionMethod={props.buyProduct}/>
                     </Paper>
             </Modal>
@@ -86,7 +86,7 @@ export default function ProductSelector(props) {
                 aria-describedby="simple-modal-description"
                 style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}
             >
-                    <Paper elevation={3} style={{width: '500px', height: '500px', padding: '24px'}}>
+                    <Paper elevation={3} style={{width: '600px', height: '200px', padding: '24px'}}>
                         <Transaction product={selectedProduct} money={props.money} transactionType="Sell" transactionMethod={props.sellProduct}/>
                     </Paper>
             </Modal>
