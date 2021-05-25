@@ -4,6 +4,7 @@ import Portfolio from './Portfolio';
 import PricesChart from './PricesChart';
 import ProductSelector from './ProductSelector';
 import './Market.css';
+import TransactionHistory from './TransactionHistory';
 
 const PRICE_CALCULATION_TIME = 500;
 const PRICES_LENGTH = 365;
@@ -18,6 +19,7 @@ export default function Market(props) {
 	let [visibleProduct, setVisibleProduct] = useState(products[0])
 	let [stock] = useState([])
 	let [marketTrend, setMarketTrend] = useState(0)
+	let [newTransaction, setNewTransaction] = useState(undefined)
 
 	function generateRandom(min, max) {
 		return Math.floor(Math.random() * (max - min + 1) + min);
@@ -53,10 +55,10 @@ export default function Market(props) {
 		return product;
 	}
 
-	let buyProduct = (product, percentage) => {
+	let buyProduct = (product, amount) => {
+
 		const index = products.indexOf(product);
-		let amount = percentage * money / product.currentPrice;
-		if (percentage > 0 && amount * product.currentPrice <= money && index !== undefined) {
+		if (amount > 0 && amount * product.currentPrice <= money && index !== undefined) {
 			product.owned += amount
 			products[index] = product
 
@@ -64,13 +66,18 @@ export default function Market(props) {
 
 			let productStock = stock.indexOf(stock.find(auxStock => auxStock.product === product.name))
 			let newAmount = productStock !== -1 ? stock[productStock].amount + amount : amount
-			let meanPrice = productStock !== -1 ? (stock[productStock].meanPrice*stock[productStock].amount + product.currentPrice*amount)/newAmount : product.currentPrice
 
 			let newStock = {
 				product: product.name,
 				amount: newAmount,
-				meanPrice: meanPrice
 			}
+
+			setNewTransaction({
+				type: 'buy',
+				product: product.name,
+				amount: amount,
+				price: product.currentPrice
+			})
 
 			if (productStock !== -1)
 				stock[productStock] = newStock
@@ -79,13 +86,11 @@ export default function Market(props) {
 		}
 	}
 
-	let sellProduct = (product, percentage) => {
+	let sellProduct = (product, amount) => {
 		const index = products.indexOf(product)
 
 		if (index !== undefined) {
 			product = products[index]
-
-			let amount = percentage * product.owned
 			let productStock = stock.indexOf(stock.find(auxStock => auxStock.product === product.name))
 
 			if (amount <= product.owned && productStock !== -1) {
@@ -95,6 +100,13 @@ export default function Market(props) {
 				products[index] = product
 
 				setMoney(money + amount * product.currentPrice)
+
+				setNewTransaction({
+					type: 'sell',
+					product: product.name,
+					amount: amount,
+					price: product.currentPrice
+				})
 				
 				if (newAmount === 0)
 					stock.splice(productStock, 1)
@@ -136,18 +148,23 @@ export default function Market(props) {
 
 	return (
 		<div className="market-container">
-			<h3>You have ${money.toFixed(2)}</h3>
+			<div className="menu">
+				<span className="actual-money">You have ${money.toFixed(2)}</span>
+			</div>
 			{products.length > 0 && (
 				<div className="market">
 					<div className="selector">
-						<ProductSelector products={products} selectProduct={setVisibleProduct}/>
+						<ProductSelector products={products} selectProduct={setVisibleProduct} money={money} buyProduct={buyProduct} sellProduct={sellProduct}/>
 					</div>
 					<div className="portfolio">
 						<span>Portfolio</span>
 						<Portfolio stocks={stock} />
 					</div>
 					<div className="prices-chart">
-						<PricesChart className="product" key={visibleProduct.id} product={visibleProduct} money={money} buyProduct={buyProduct} sellProduct={sellProduct}/>
+						<PricesChart className="product" key={visibleProduct.id} product={visibleProduct}/>
+					</div>
+					<div className="history">
+						<TransactionHistory newTransaction={newTransaction}/>
 					</div>
 				</div>
 			)}

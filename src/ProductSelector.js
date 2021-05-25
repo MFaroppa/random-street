@@ -1,25 +1,10 @@
-import { Card, CardActions, CardContent, CardHeader, IconButton, List, ListItem, ListItemSecondaryAction, ListItemText, makeStyles } from "@material-ui/core";
-import CheckIcon from '@material-ui/icons/Check';
-import EditIcon from '@material-ui/icons/Edit';
+import { Button, Card, CardActionArea, CardActions, CardHeader, makeStyles, Modal, Paper, Tooltip } from "@material-ui/core";
 import { useState } from "react";
+import Transaction from "./Transaction";
 
 const cardStyle = makeStyles(theme => ({
-    card: {
-        "&:hover": {
-            cursor: "pointer",
-            backgroundColor: "#fafafa"
-        },
-        "&:active": {
-            cursor: "pointer",
-            backgroundColor: "#f4f4f4"
-        },
-        marginBottom: 12
-    },
-    content: {
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        height: "2em"
+    selectedCard: {
+        boxShadow: '1px 1px 5px rgba(0, 0, 0, 0.4)'
     }
 }))
 
@@ -27,6 +12,8 @@ export default function ProductSelector(props) {
 
     const classes = cardStyle();
 
+    let [showBuyModal, setShowBuyModal] = useState(false)
+    let [showSellModal, setShowSellModal] = useState(false)
     let [selectedProduct, setSelectedProduct] = useState(props.products[0])
 
     let onSelected = (ev, product) => {
@@ -43,8 +30,18 @@ export default function ProductSelector(props) {
         return <span style={{color: variation >= 0 ? "green" : "red"}}>{variation.toFixed(2)}%</span>
     }
 
-    let editProduct = product => {
+    let showTransaction = (transactionType, product) => {
+        setSelectedProduct(product)
+        props.selectProduct(product)
+        if (transactionType === 'Buy')
+            setShowBuyModal(true)
+        else
+            setShowSellModal(true)
+    }
 
+    let handleClose = () => {
+        setShowSellModal(false)
+        setShowBuyModal(false)
     }
 
     let products = props.products;
@@ -53,28 +50,46 @@ export default function ProductSelector(props) {
         <div className="product-selector-container">
             {products.map(product => {
                 return (
-                    <div>
-                        <Card 
-                            classes={{root: classes.card}}
-                            onClick={ev => onSelected(ev, product)}
-                            variant="outlined"
-                        >
-                            <CardHeader 
-                                title={product.name} 
-                                subheader={getProductVariation(product)}
-                            />
-                            <CardContent>
-                                <div className={classes.content}>
-                                    <div style={{fontWeight: "500"}}>{"$" + product.currentPrice}</div>
-                                    {
-                                        selectedProduct === product && <div style={{color: "green"}}><CheckIcon fontSize="small"/></div>
-                                    }
+                    <div key={product.id} style={{marginBottom: 12}}>
+                        <Card classes={selectedProduct === product ? {root: classes.selectedCard} : null} variant="outlined">
+                            <CardActionArea onClick={ev => onSelected(ev, product)}>
+                                <CardHeader title={product.name} subheader={<Tooltip title="Last year variation">{getProductVariation(product)}</Tooltip>}/>
+                            </CardActionArea>
+                            <CardActions style={{display: 'flex', justifyContent: 'space-between'}}>
+                                <div style={{fontWeight: "500", fontSize: '16px', paddingLeft: '8px'}}>
+                                    <Tooltip title="Current price"><span>{"$" + product.currentPrice}</span></Tooltip>
                                 </div>
-                            </CardContent>
+                                <div>
+                                    <Button color='primary' onClick={() => showTransaction('Buy', product)}>Buy</Button>
+                                    <Button color='secondary' onClick={() => showTransaction('Sell', product)}>Sell</Button>
+                                </div>
+                            </CardActions>
                         </Card>
                     </div>
                 )
             })}
+            <Modal
+                open={showBuyModal}
+                onClose={handleClose}
+                aria-labelledby="simple-modal-title"
+                aria-describedby="simple-modal-description"
+                style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}
+            >
+                    <Paper elevation={3} style={{width: '500px', height: '500px', padding: '24px'}}>
+                        <Transaction product={selectedProduct} money={props.money} transactionType="Buy" transactionMethod={props.buyProduct}/>
+                    </Paper>
+            </Modal>
+            <Modal
+                open={showSellModal}
+                onClose={handleClose}
+                aria-labelledby="simple-modal-title"
+                aria-describedby="simple-modal-description"
+                style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}
+            >
+                    <Paper elevation={3} style={{width: '500px', height: '500px', padding: '24px'}}>
+                        <Transaction product={selectedProduct} money={props.money} transactionType="Sell" transactionMethod={props.sellProduct}/>
+                    </Paper>
+            </Modal>
         </div>
     )
 }

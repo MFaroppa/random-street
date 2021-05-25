@@ -17,7 +17,7 @@ export default function Transaction(props) {
     let money = props.money;
     let transactionType = props.transactionType;
 
-    const handleBuyChange = (event, newValue) => {
+    const handleChange = (event, newValue) => {
         setPercentage(newValue);
     };
 
@@ -25,30 +25,38 @@ export default function Transaction(props) {
         <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
             <Slider 
                 value={percentage} 
-                onChange={handleBuyChange} 
+                onChange={handleChange} 
                 aria-labelledby="continuous-slider" 
                 className={classes.slider} 
             />
-            <span>
-                ${transactionType === "Buy" ?
-                    (money*percentage/100).toFixed(2)
-                : 
-                    (product.currentPrice*product.owned*percentage/100).toFixed(2)}
-            </span>
+            
+            {transactionType === "Buy" ?
+                <div>
+                    <span style={{marginRight: '24px'}}>{((money*percentage/100)/product.currentPrice).toFixed(4)}</span>
+                    <span>${(money*percentage/100)} </span>
+                </div>
+            : 
+                <div>
+                    <span style={{marginRight: '24px'}}>{(product.owned*percentage/100).toFixed(2)}</span>
+                    <span>${(product.currentPrice * product.owned * percentage/100).toFixed(2)}</span>
+                </div>
+            }
             {transactionType === "Buy" ?
                 <Button 
-                    onClick={() => props.transactionMethod(product, percentage/100)} 
+                    onClick={() => props.transactionMethod(product, ((money*percentage/100)/product.currentPrice))} 
                     color="primary" 
-                    variant="contained">
+                    variant="contained"
+                    disabled={money === 0}>
                     Buy
                 </Button>
             :
                 <Button 
                     onClick={() => {
-                        props.transactionMethod(product, percentage/100)
+                        props.transactionMethod(product, (product.owned*percentage/100))
                     }} 
                     color="secondary" 
-                    variant="contained">
+                    variant="contained"
+                    disabled={product.owned === 0}>
                     Sell
                 </Button>
             }  

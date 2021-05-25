@@ -1,7 +1,7 @@
 [
 	{
 		"id": 1,
-		"name": "Bytecoin",
+		"name": "Product 1",
 		"drift": 0.15,
 		"volatility": 0.4,
 		"owned": 0,
@@ -15,7 +15,7 @@
 	},
 	{
 		"id": 2,
-		"name": "Soybean",
+		"name": "Product 2",
 		"drift": 0.1,
 		"volatility": 0.15,
 		"owned": 0,
@@ -29,7 +29,7 @@
 	},
 	{
 		"id": 3,
-		"name": "Gold",
+		"name": "Product 3",
 		"drift": 0.05,
 		"volatility": 0.05,
 		"owned": 0,
