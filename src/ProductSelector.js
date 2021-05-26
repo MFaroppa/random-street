@@ -33,7 +33,7 @@ export default function ProductSelector(props) {
     let showTransaction = (transactionType, product) => {
         setSelectedProduct(product)
         props.selectProduct(product)
-        if (transactionType === 'Buy')
+        if (transactionType === 'Comprar')
             setShowBuyModal(true)
         else
             setShowSellModal(true)
@@ -60,8 +60,8 @@ export default function ProductSelector(props) {
                                     <Tooltip title="Current price"><span>{"$" + product.currentPrice}</span></Tooltip>
                                 </div>
                                 <div>
-                                    <Button color='primary' onClick={() => showTransaction('Buy', product)}>Buy</Button>
-                                    <Button color='secondary' onClick={() => showTransaction('Sell', product)}>Sell</Button>
+                                    <Button color='primary' onClick={() => showTransaction('Comprar', product)}>Comprar</Button>
+                                    <Button color='secondary' onClick={() => showTransaction('Vender', product)}>Vender</Button>
                                 </div>
                             </CardActions>
                         </Card>
@@ -76,7 +76,7 @@ export default function ProductSelector(props) {
                 style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}
             >
                     <Paper elevation={3} style={{width: '600px', height: '200px', padding: '24px'}}>
-                        <Transaction product={selectedProduct} money={props.money} transactionType="Buy" transactionMethod={props.buyProduct}/>
+                        <Transaction product={selectedProduct} money={props.money} handleClose={handleClose} transactionType="Comprar" transactionMethod={props.buyProduct}/>
                     </Paper>
             </Modal>
             <Modal
@@ -87,7 +87,7 @@ export default function ProductSelector(props) {
                 style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}
             >
                     <Paper elevation={3} style={{width: '600px', height: '200px', padding: '24px'}}>
-                        <Transaction product={selectedProduct} money={props.money} transactionType="Sell" transactionMethod={props.sellProduct}/>
+                        <Transaction product={selectedProduct} money={props.money} handleClose={handleClose} transactionType="Vender" transactionMethod={props.sellProduct}/>
                     </Paper>
             </Modal>
         </div>

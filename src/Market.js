@@ -1,10 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { Button, Modal, Paper, Slider } from '@material-ui/core';
 import { useEffect, useState } from 'react';
-import PricesChart from './PricesChart';
-import ProductSelector from './ProductSelector';
 import './Market.css';
+import PricesChart from './PricesChart';
+import Products from './Products';
+import ProductSelector from './ProductSelector';
 import TransactionHistory from './TransactionHistory';
-import { Button, Slider } from '@material-ui/core';
 
 const PRICE_CALCULATION_TIME = 500;
 const PRICES_LENGTH = 365;
@@ -16,6 +17,8 @@ export default function Market(props) {
 	let [money, setMoney] = useState(props.money)
 	let [time, setTime] = useState(0)
 	let [products, setProducts] = useState(props.products)
+	let [showProducts, setShowProducts] = useState(false)
+	let [showCredits, setShowCredits] = useState(false)
 	let [visibleProduct, setVisibleProduct] = useState(products[0])
 	let [stock] = useState([])
 	let [marketTrend, setMarketTrend] = useState(0)
@@ -76,7 +79,7 @@ export default function Market(props) {
 
 			setNewTransaction({
 				id: newTransaction === undefined ? 1 : newTransaction.id + 1,
-				type: 'buy',
+				type: 'Comprar',
 				product: product.name,
 				amount: productUnits,
 				price: product.currentPrice
@@ -105,7 +108,7 @@ export default function Market(props) {
 
 				setNewTransaction({
 					id: newTransaction === undefined ? 1 : newTransaction.id + 1,
-					type: 'sell',
+					type: 'Vender',
 					product: product.name,
 					amount: amount,
 					price: product.currentPrice
@@ -117,6 +120,15 @@ export default function Market(props) {
 					stock[productStock].amount = newAmount
 			}
 		}
+	}
+
+	let handleClose = () => {
+		setShowProducts(false);
+		setShowCredits(false);
+	}
+
+	let editProducts = editedProducts => {
+		setProducts(editedProducts);
 	}
 
 	//timer for new price calculation
@@ -153,7 +165,7 @@ export default function Market(props) {
 		<div className="market-container">
 			<div className="menu">
 				<div className="options">
-					<Button style={{color: "gray"}}>
+					<Button style={{color: "gray"}} onClick={() => setShowProducts(true)}>
 						Productos
 					</Button>
 					<Button style={{color: "gray"}}>
@@ -193,6 +205,17 @@ export default function Market(props) {
 					</div>
 				</div>
 			)}
+			<Modal
+				open={showProducts}
+				onClose={handleClose}
+				aria-labelledby="simple-modal-title"
+				aria-describedby="simple-modal-description"
+				style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}
+			>
+					<Paper elevation={3} style={{width: 'auto', height: 'auto', padding: '48px'}}>
+						<Products products={products} editProducts={editProducts} handleClose={handleClose}/>
+					</Paper>
+			</Modal>
 		</div>
 	);
 }

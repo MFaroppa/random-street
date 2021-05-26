@@ -1,4 +1,4 @@
-import { LineChart, Line, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
+import { Line, LineChart, ResponsiveContainer, Tooltip, YAxis } from 'recharts';
 
 
 export default function PricesChart(props) {

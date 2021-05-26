@@ -1,3 +1,4 @@
+import { TablePagination } from '@material-ui/core';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -8,7 +9,18 @@ import { useEffect, useState } from 'react';
 
 export default function TransactionHistory(props) {
 
+    let [rowsPerPage, setRowsPerPage] = useState(10);
+    let [page, setPage] = useState(0);
     let [history] = useState([])
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(+event.target.value);
+        setPage(0);
+    };
 
     useEffect(() => {
         if (props.newTransaction) {
@@ -23,6 +35,7 @@ export default function TransactionHistory(props) {
                 total: (transaction.price * transaction.amount).toFixed(2)
             })
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.newTransaction])
 
     return (
@@ -38,17 +51,26 @@ export default function TransactionHistory(props) {
                     </TableRow>
                     </TableHead>
                     <TableBody>
-                    {history.map(transaction => (
+                    {history.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(transaction => (
                         <TableRow key={transaction.id}>
-                            <TableCell align="center" style={transaction.type === 'buy' ? {color: 'green'} : {color: 'red'}}>{transaction.product}</TableCell>
-                            <TableCell align="center" style={transaction.type === 'buy' ? {color: 'green'} : {color: 'red'}}>{transaction.quantity}</TableCell>
-                            <TableCell align="center" style={transaction.type === 'buy' ? {color: 'green'} : {color: 'red'}}>{transaction.price}</TableCell>
-                            <TableCell align="center" style={transaction.type === 'buy' ? {color: 'green'} : {color: 'red'}}>{transaction.total}</TableCell>
+                            <TableCell align="center" style={transaction.type === 'Comprar' ? {color: 'green'} : {color: 'red'}}>{transaction.product}</TableCell>
+                            <TableCell align="center" style={transaction.type === 'Comprar' ? {color: 'green'} : {color: 'red'}}>{transaction.quantity}</TableCell>
+                            <TableCell align="center" style={transaction.type === 'Comprar' ? {color: 'green'} : {color: 'red'}}>{transaction.price}</TableCell>
+                            <TableCell align="center" style={transaction.type === 'Comprar' ? {color: 'green'} : {color: 'red'}}>{transaction.total}</TableCell>
                         </TableRow>
                     ))}
                     </TableBody>
                 </Table>
             </TableContainer>
+            <TablePagination
+                rowsPerPageOptions={[5, 10, 25]}
+                component="div"
+                count={history.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onChangePage={handleChangePage}
+                onChangeRowsPerPage={handleChangeRowsPerPage}
+            />
         </div>
     )
 }

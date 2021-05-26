@@ -1,7 +1,7 @@
 [
 	{
 		"id": 1,
-		"name": "Product 1",
+		"name": "Bytecoin",
 		"drift": 0.15,
 		"volatility": 0.4,
 		"owned": 0,
@@ -9,13 +9,13 @@
 		"historicalPrices": [
 			{
 				"time": 0,
-				"price": 2000
+				"price": 60000
 			}
 		]
 	},
 	{
 		"id": 2,
-		"name": "Product 2",
+		"name": "Ethernum",
 		"drift": 0.1,
 		"volatility": 0.15,
 		"owned": 0,
@@ -23,13 +23,13 @@
 		"historicalPrices": [
 			{
 				"time": 0,
-				"price": 600
+				"price": 3000
 			}
 		]
 	},
 	{
 		"id": 3,
-		"name": "Product 3",
+		"name": "Dólar",
 		"drift": 0.05,
 		"volatility": 0.05,
 		"owned": 0,
@@ -37,7 +37,7 @@
 		"historicalPrices": [
 			{
 				"time": 0,
-				"price": 25000
+				"price": 1
 			}
 		]
 	}

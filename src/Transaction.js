@@ -6,7 +6,7 @@ export default function Transaction(props) {
     let money = props.money;
     let transactionType = props.transactionType;
 
-    let [amount, setAmount] = useState(transactionType === 'Buy' ? money : product.owned)
+    let [amount, setAmount] = useState(transactionType === 'Comprar' ? money : product.owned)
 
     let handleAmountChange = ev => {
         setAmount(ev.target.value);
@@ -15,7 +15,7 @@ export default function Transaction(props) {
     let doTransaction = useAll => {
         if (useAll === true) {
             let allAmount;
-            if (transactionType === 'Buy')
+            if (transactionType === 'Comprar')
                 allAmount = money;
             else
                 allAmount = product.owned
@@ -23,6 +23,8 @@ export default function Transaction(props) {
         } else {
             props.transactionMethod(product, amount)
         }
+
+        props.handleClose();
     }
 
     return (
@@ -33,23 +35,25 @@ export default function Transaction(props) {
                     label="Pesos"
                     type="number"
                     variant="filled"
-                    value={transactionType === 'Buy' ? amount : amount * product.currentPrice}
+                    value={transactionType === 'Comprar' ? amount : amount * product.currentPrice}
                     onChange={handleAmountChange}
-                    disabled={transactionType === 'Sell'}
+                    disabled={transactionType === 'Vender'}
+                    error={transactionType === 'Comprar' && amount > money}
                 />
                 <TextField
                     id="number"
                     label={product.name}
                     type="number"
                     variant="filled"
-                    value={transactionType === 'Buy' ? (amount/product.currentPrice).toFixed(5) : amount}
+                    value={transactionType === 'Comprar' ? (amount/product.currentPrice).toFixed(5) : amount}
                     onChange={handleAmountChange}
-                    disabled={transactionType === 'Buy'}
+                    disabled={transactionType === 'Comprar'}
+                    error={transactionType === 'Vender' && amount > product.owned}
                 />
                 <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                     <div>
                         {
-                            transactionType === 'Buy' ?
+                            transactionType === 'Comprar' ?
                                 amount > money && (
                                     <span>
                                         No tiene el dinero suficiente.
@@ -63,20 +67,19 @@ export default function Transaction(props) {
                                 )  
                         }
                     </div>
-                    <div>
-                    <Button 
-                        onClick={() => doTransaction(true)}
-                        color={transactionType === 'Buy' ? 'primary' : 'secondary'}>
-                        {transactionType === 'Buy' ? 'Comprar todo' : 'Vender todo'}
-                    </Button>
-                    <Button 
-                        onClick={() => doTransaction(false)}
-                        color={transactionType === 'Buy' ? 'primary' : 'secondary'}
-                        variant="contained"
-                        disabled={amount < 0 || (transactionType === 'Buy' ? money === 0 || amount > money : product.owned === 0 || amount > product.owned)}>
-                        {transactionType}
-                    </Button>
-                    
+                    <div style={{display: "flex", gap: "12px"}}>
+                        <Button 
+                            onClick={() => doTransaction(true)}
+                            color={transactionType === 'Comprar' ? 'primary' : 'secondary'}>
+                            {transactionType === 'Comprar' ? 'Comprar todo' : 'Vender todo'}
+                        </Button>
+                        <Button 
+                            onClick={() => doTransaction(false)}
+                            color={transactionType === 'Comprar' ? 'primary' : 'secondary'}
+                            variant="contained"
+                            disabled={amount < 0 || (transactionType === 'Comprar' ? money === 0 || amount > money : product.owned === 0 || amount > product.owned)}>
+                            {transactionType}
+                        </Button>
                     </div>
                 </div>
             </div>
