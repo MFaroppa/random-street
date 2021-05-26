@@ -9,7 +9,7 @@
 		"historicalPrices": [
 			{
 				"time": 0,
-				"price": 60000
+				"price": 35000
 			}
 		]
 	},
@@ -23,7 +23,7 @@
 		"historicalPrices": [
 			{
 				"time": 0,
-				"price": 3000
+				"price": 2000
 			}
 		]
 	},
@@ -37,7 +37,7 @@
 		"historicalPrices": [
 			{
 				"time": 0,
-				"price": 1
+				"price": 160
 			}
 		]
 	}

@@ -7,6 +7,7 @@ export default function Transaction(props) {
     let transactionType = props.transactionType;
 
     let [amount, setAmount] = useState(transactionType === 'Comprar' ? money : product.owned)
+    const [step] = useState(amount*0.01)
 
     let handleAmountChange = ev => {
         setAmount(ev.target.value);
@@ -27,6 +28,10 @@ export default function Transaction(props) {
         props.handleClose();
     }
 
+    const numberSteps = {
+        step: step,
+    };
+
     return (
         <div>
             <div style={{display: 'flex', flexDirection: 'column', gap: '24px'}}>
@@ -35,6 +40,7 @@ export default function Transaction(props) {
                     label="Pesos"
                     type="number"
                     variant="filled"
+                    inputProps={numberSteps}
                     value={transactionType === 'Comprar' ? amount : amount * product.currentPrice}
                     onChange={handleAmountChange}
                     disabled={transactionType === 'Vender'}
@@ -45,6 +51,7 @@ export default function Transaction(props) {
                     label={product.name}
                     type="number"
                     variant="filled"
+                    inputProps={numberSteps}
                     value={transactionType === 'Comprar' ? (amount/product.currentPrice).toFixed(5) : amount}
                     onChange={handleAmountChange}
                     disabled={transactionType === 'Comprar'}

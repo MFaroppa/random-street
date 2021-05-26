@@ -34,7 +34,7 @@ export default function Products(props) {
                         <TableCell align="center">Nombre</TableCell>
                         <TableCell align="center">Tendencia</TableCell>
                         <TableCell align="center">Volatilidad</TableCell>
-                        <TableCell align="center">Adquirido</TableCell>
+                        <TableCell align="center">Stock</TableCell>
                     </TableRow>
                     </TableHead>
                     <TableBody>

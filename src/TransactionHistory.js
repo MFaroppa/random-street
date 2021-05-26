@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 
 export default function TransactionHistory(props) {
 
-    let [rowsPerPage, setRowsPerPage] = useState(10);
+    let [rowsPerPage, setRowsPerPage] = useState(5);
     let [page, setPage] = useState(0);
     let [history] = useState([])
 
@@ -44,9 +44,9 @@ export default function TransactionHistory(props) {
                 <Table size="small" aria-label="a dense table">
                     <TableHead>
                     <TableRow>
-                        <TableCell align="center">Product</TableCell>
-                        <TableCell align="center">Quantity</TableCell>
-                        <TableCell align="center">Price</TableCell>
+                        <TableCell align="center">Producto</TableCell>
+                        <TableCell align="center">Cantidad</TableCell>
+                        <TableCell align="center">Precio</TableCell>
                         <TableCell align="center">Total</TableCell>
                     </TableRow>
                     </TableHead>
@@ -55,8 +55,8 @@ export default function TransactionHistory(props) {
                         <TableRow key={transaction.id}>
                             <TableCell align="center" style={transaction.type === 'Comprar' ? {color: 'green'} : {color: 'red'}}>{transaction.product}</TableCell>
                             <TableCell align="center" style={transaction.type === 'Comprar' ? {color: 'green'} : {color: 'red'}}>{transaction.quantity}</TableCell>
-                            <TableCell align="center" style={transaction.type === 'Comprar' ? {color: 'green'} : {color: 'red'}}>{transaction.price}</TableCell>
-                            <TableCell align="center" style={transaction.type === 'Comprar' ? {color: 'green'} : {color: 'red'}}>{transaction.total}</TableCell>
+                            <TableCell align="center" style={transaction.type === 'Comprar' ? {color: 'green'} : {color: 'red'}}>${transaction.price}</TableCell>
+                            <TableCell align="center" style={transaction.type === 'Comprar' ? {color: 'green'} : {color: 'red'}}>${transaction.total}</TableCell>
                         </TableRow>
                     ))}
                     </TableBody>
