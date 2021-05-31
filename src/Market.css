@@ -40,6 +40,17 @@
 	gap: 24px;
 }
 
+.credits-container {
+	min-width: 500px;
+	display: flex;
+	flex-direction: column;
+	gap: 32px;
+}
+
+.credits-container .money {
+	font-weight: 500;
+}
+
 .menu .options {
 	display: flex;
 	align-items: center;

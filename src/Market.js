@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Button, Modal, Paper, Slider } from '@material-ui/core';
 import { useEffect, useState } from 'react';
+import Credits from './Credits';
 import './Market.css';
 import PricesChart from './PricesChart';
 import Products from './Products';
@@ -19,6 +20,8 @@ export default function Market(props) {
 	let [products, setProducts] = useState(props.products)
 	let [showProducts, setShowProducts] = useState(false)
 	let [showCredits, setShowCredits] = useState(false)
+	let [credit, setCredit] = useState(undefined)
+	let [counter, setCounter] = useState(0)
 	let [visibleProduct, setVisibleProduct] = useState(products[0])
 	let [stock] = useState([])
 	let [marketTrend, setMarketTrend] = useState(0)
@@ -131,6 +134,27 @@ export default function Market(props) {
 		setProducts(editedProducts);
 	}
 
+	let handleCredit = credit => {
+		setCredit(credit);
+	}
+
+	useEffect(() => {
+		if (credit) {
+			setMoney(actualMoney => actualMoney + credit.amount)
+			setCounter(credit.time)
+
+			setTimeout(() => {
+				setMoney(actualMoney => actualMoney - credit.return)
+				setCredit(undefined)
+			}, credit.time*1000)
+		}
+	}, [credit])
+
+	useEffect(() => {
+		const timer = counter > 0 && setInterval(() => setCounter(counter - 1), 1000);
+		return () => clearInterval(timer);
+	  }, [counter]);
+
 	//timer for new price calculation
 	useEffect(() => {
 		let interval = setInterval(() => {
@@ -165,11 +189,11 @@ export default function Market(props) {
 		<div className="market-container">
 			<div className="menu">
 				<div className="options">
-					<Button style={{color: "gray"}} onClick={() => setShowProducts(true)}>
+					<Button style={{color: "gray", width: "150px"}} onClick={() => setShowProducts(true)}>
 						Productos
 					</Button>
-					<Button style={{color: "gray"}}>
-						Créditos
+					<Button style={credit && counter > 0 ? {color: "darkgray", width: "150px", display: "none"} : {color: "gray", width: "150px", display: "none"}} onClick={() => setShowCredits(true)} disabled={!!credit}>
+						Créditos {counter > 0 && <span>&#8287;({counter})</span>}
 					</Button>
 					<span style={{color: "gray", display: "flex", alignItems: "center", gap: "12px", fontWeight: "500"}}>
 						<Slider
@@ -198,7 +222,7 @@ export default function Market(props) {
 						<ProductSelector products={products} selectProduct={setVisibleProduct} money={money} buyProduct={buyProduct} sellProduct={sellProduct}/>
 					</div>
 					<div className="prices-chart">
-						<PricesChart className="product" key={visibleProduct.id} product={visibleProduct}/>
+						<PricesChart key={visibleProduct.id} product={visibleProduct}/>
 					</div>
 					<div className="history">
 						<TransactionHistory newTransaction={newTransaction}/>
@@ -214,6 +238,17 @@ export default function Market(props) {
 			>
 					<Paper elevation={3} style={{width: 'auto', height: 'auto', padding: '48px'}}>
 						<Products products={products} editProducts={editProducts} handleClose={handleClose}/>
+					</Paper>
+			</Modal>
+			<Modal
+				open={showCredits}
+				onClose={handleClose}
+				aria-labelledby="simple-modal-title"
+				aria-describedby="simple-modal-description"
+				style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}
+			>
+					<Paper elevation={3} style={{width: 'auto', height: 'auto', padding: '48px'}}>
+						<Credits handleClose={() => setShowCredits(false)} concreteCredit={handleCredit}/>
 					</Paper>
 			</Modal>
 		</div>
