@@ -40,6 +40,11 @@
 	gap: 24px;
 }
 
+.product-card {
+	margin-bottom: 12px;
+	width: 400px;
+}
+
 .credits-container {
 	min-width: 500px;
 	display: flex;
@@ -74,5 +79,21 @@
 		grid-column: 1/2;
 		grid-row: 3/4;
 		padding: 0;
+	}
+}
+
+@media screen and (min-width: 1000px) and (max-width: 1300px) {
+	.product-card {
+		width: 300px;
+	}
+}
+
+@media screen and (max-width: 1000px) {
+	.product-selector-container {
+		flex-direction: column;
+	}
+
+	.product-card {
+		width: 500px;
 	}
 }

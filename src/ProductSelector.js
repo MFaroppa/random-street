@@ -55,14 +55,14 @@ export default function ProductSelector(props) {
         <div className="product-selector-container">
             {products.map(product => {
                 return (
-                    <div key={product.id} style={{marginBottom: 12, width: '400px'}}>
+                    <div className="product-card" key={product.id}>
                         <Card classes={selectedProduct === product ? {root: classes.selectedCard} : null} variant="outlined">
                             <CardActionArea onClick={ev => onSelected(ev, product)}>
-                                <CardHeader title={product.name} subheader={<Tooltip title="Last year variation">{getProductVariation(product)}</Tooltip>}/>
+                                <CardHeader title={product.name} subheader={<Tooltip title="Variación interanual">{getProductVariation(product)}</Tooltip>}/>
                             </CardActionArea>
                             <CardActions style={{display: 'flex', justifyContent: 'space-between'}}>
                                 <div style={{fontWeight: "500", fontSize: '16px', paddingLeft: '8px'}}>
-                                    <Tooltip title="Current price"><span>{"$" + formatPrice(product.currentPrice)}</span></Tooltip>
+                                    <Tooltip title="Precio actual"><span>{"$" + formatPrice(product.currentPrice)}</span></Tooltip>
                                 </div>
                                 <div>
                                     <Button color='primary' onClick={() => showTransaction('Comprar', product)} disabled={props.money === 0}>Comprar</Button>
