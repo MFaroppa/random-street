@@ -2,6 +2,7 @@
 import { Button, Modal, Paper, Slider } from '@material-ui/core';
 import { useEffect, useState } from 'react';
 import Credits from './Credits';
+import FinishPage from './FinishPage';
 import './Market.css';
 import PricesChart from './PricesChart';
 import Products from './Products';
@@ -15,7 +16,7 @@ const STANDARD_DEVIATION = Math.sqrt(TIME_PERIOD)
 
 export default function Market(props) {
 
-	let [money, setMoney] = useState(props.money)
+	let [money, setMoney] = useState(props.difficulty.initialMoney)
 	let [time, setTime] = useState(0)
 	let [products, setProducts] = useState(props.products)
 	let [showProducts, setShowProducts] = useState(false)
@@ -27,6 +28,7 @@ export default function Market(props) {
 	let [marketTrend, setMarketTrend] = useState(0)
 	let [newTransaction, setNewTransaction] = useState(undefined)
 	let [priceCalculationTime, setPriceCalculationTime] = useState(PRICE_CALCULATION_TIME)
+	let [finished, setFinished] = useState(false)
 
 	function generateRandom(min, max) {
 		return Math.floor(Math.random() * (max - min + 1) + min);
@@ -51,7 +53,7 @@ export default function Market(props) {
 			lastPrice += variation;
 
 			tempPrices.push({
-				time: time + TIME_PERIOD,
+				time: time,
 				price: lastPrice
 			})
 		}
@@ -157,19 +159,25 @@ export default function Market(props) {
 
 	//timer for new price calculation
 	useEffect(() => {
-		let interval = setInterval(() => {
-			setTime(time + TIME_PERIOD)
-			let editedProducts = []
-			for (let product of products) {
-				editedProducts.push(generatePrice(product))
+		if (!finished) {
+			let interval = setInterval(() => {
+				setTime(time + 1)
+				let editedProducts = []
+				for (let product of products) {
+					editedProducts.push(generatePrice(product))
+				}
+
+				if (props.difficulty.bankrupcy && (time+1) % 30 === 0) {
+					setMoney(money - props.difficulty.annualCost)
+				}
+				
+				setProducts(editedProducts)
+
+			}, priceCalculationTime)
+
+			return () => {
+				clearInterval(interval);
 			}
-			
-			setProducts(editedProducts)
-
-		}, priceCalculationTime)
-
-		return () => {
-			clearInterval(interval);
 		}
 	}, [products])
 
@@ -184,6 +192,20 @@ export default function Market(props) {
 		trendLoop()
 	}, [])
 
+	const finishSession = () => {
+		const currentSession = JSON.parse(localStorage.getItem('currentUser'))
+		let historicalData = JSON.parse(localStorage.getItem('historicalData'))
+		historicalData.push({user: currentSession.currentUser, score: money, date: new Intl.DateTimeFormat('es-ES').format(new Date()), difficulty: currentSession.difficulty})
+		localStorage.setItem('historicalData', JSON.stringify(historicalData))
+		
+		setFinished(true)
+	}
+
+	useEffect(() => {
+		if (money <= 0)
+			finishSession()
+	}, [money])
+
 
 	return (
 		<div className="market-container">
@@ -192,7 +214,7 @@ export default function Market(props) {
 					<Button style={{color: "gray", width: "150px"}} onClick={() => setShowProducts(true)}>
 						Productos
 					</Button>
-					<Button style={credit && counter > 0 ? {color: "darkgray", width: "150px", display: "none"} : {color: "gray", width: "150px", display: "none"}} onClick={() => setShowCredits(true)} disabled={!!credit}>
+					<Button style={credit && counter > 0 ? {color: "darkgray", width: "150px"} : {color: "gray", width: "150px"}} onClick={() => setShowCredits(true)} disabled={!!credit}>
 						Créditos {counter > 0 && <span>&#8287;({counter})</span>}
 					</Button>
 					<span style={{color: "gray", display: "flex", alignItems: "center", gap: "12px", fontWeight: "500"}}>
@@ -212,9 +234,15 @@ export default function Market(props) {
 						{priceCalculationTime} ms
 					</span>
 				</div>
-				<span className="actual-money">
-					${money.toFixed(2)}
-				</span>
+				<div style={{display: 'flex'}}>
+					<div className="actual-money">
+						${money.toFixed(2)}
+					</div>
+					<Button style={{color: "gray", width: "150px"}} onClick={() => finishSession()}>
+						Finalizar
+					</Button>
+				</div>
+				
 			</div>
 			{products.length > 0 && (
 				<div className="market">
@@ -249,6 +277,17 @@ export default function Market(props) {
 			>
 					<Paper elevation={3} style={{width: 'auto', height: 'auto', padding: '48px'}}>
 						<Credits handleClose={() => setShowCredits(false)} concreteCredit={handleCredit}/>
+					</Paper>
+			</Modal>
+			<Modal
+				open={finished}
+				onClose={() => window.location.reload()}
+				aria-labelledby="simple-modal-title"
+				aria-describedby="simple-modal-description"
+				style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}
+			>
+					<Paper elevation={3} style={{width: 'auto', height: 'auto', padding: '48px'}}>
+						<FinishPage money={money}/>
 					</Paper>
 			</Modal>
 		</div>

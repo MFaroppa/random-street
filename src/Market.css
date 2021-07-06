@@ -27,6 +27,7 @@
 .actual-money {
 	font-weight: 400;
 	font-size: 18px;
+	margin: 7px 12px;
 }
 
 .portfolio-list {
@@ -54,6 +55,13 @@
 
 .credits-container .money {
 	font-weight: 500;
+}
+
+.finish-container {
+	display: flex;
+	flex-direction: column;
+	gap: 48px;
+	padding-bottom: 32px;
 }
 
 .menu .options {
