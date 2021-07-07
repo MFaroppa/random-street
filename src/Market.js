@@ -202,7 +202,8 @@ export default function Market(props) {
 	}
 
 	useEffect(() => {
-		if (money <= 0)
+		const currentSession = JSON.parse(localStorage.getItem('currentUser'))
+		if (money <= 0 && currentSession.difficulty.bankrupcy)
 			finishSession()
 	}, [money])
 
