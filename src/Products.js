@@ -5,13 +5,11 @@ export default function Products(props) {
 
     let products = props.products;
 
-    const numberSteps = {
-        step: 0.01,
-    };
+    const numberSteps = { step: 0.01, };
 
     let changeName = (ev, index) => {
-        let name = ev.target.value;
-        products[index].name = name;
+        let name = ev.target.value
+        products[index].name = name
     }
 
     let changeDrift = (ev, index) => {
